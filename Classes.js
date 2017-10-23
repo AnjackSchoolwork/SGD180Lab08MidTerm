@@ -18,10 +18,10 @@ class baseItem {
 // All entities inherit from this
 class baseEnt {
 
-	constructor() {
+	constructor(x_pos, y_pos, sprite_image) {
 		// Percentage-based?
 		this.health = 100
-
+		
 		// Inventory is object containing keys which are object names
 		// and values which are objects defining what the object does.
 		// Each inventory object will have a passiveEffect method and
@@ -33,12 +33,13 @@ class baseEnt {
 
 		// Default to canvas origin
 		this.position = {
-			"x": 0,
-			"y": 0
+			// If null, set coordinates to 0
+			"x": x_pos == null ? 0 : x_pos,
+			"y": y_pos == null ? 0 : y_pos
 		}
 
 		// Empty sprite by default
-		this.image = new Sprite()
+		this.image = new Sprite(sprite_image)
 	}
 
 	get Health() {
@@ -102,7 +103,7 @@ class baseEnt {
 
 	// Redraw sprites, update positions
 	Update() {
-
+		this.image.Update()
 	}
 }
 
@@ -132,8 +133,13 @@ class Player extends baseEnt {
 
 class Sprite {
 
-	constructor() {
-
+	constructor(sprite_image) {
+		if (sprite_image != null) {
+			// Create an image element and store it
+		}
+		else {
+			// Use default placeholder sprite
+		}
 	}
 
 	Update() {
