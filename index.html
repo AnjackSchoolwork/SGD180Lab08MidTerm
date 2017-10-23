@@ -5,10 +5,16 @@
     <title></title>
 	<link rel="stylesheet" type="text/css" href="default.css" />
 	<script type="text/javascript" src="Game.js"></script>
+	<script type="text/javascript" src="Classes.js"></script>
+	<script type="text/javascript" src="SceneHandler.js"></script>
+	<script type="text/javascript" src="CollisionHandler.js"></script>
 </head>
 <body>
 	<div id="canvas_div">
-		<canvas id="main_canvas"></canvas>
+		<canvas id="main_canvas" height="600" width="800"></canvas>
 	</div>
+	<script type="text/javascript">
+		Setup(document.getElementById("main_canvas"))
+	</script>
 </body>
 </html>

@@ -1,5 +1,7 @@
 // Handle all direct canvas operations here
 
+// Global sceneObject list?
+
 // Draw everything in current scene
 function redrawScene(canvas_context) {
 	

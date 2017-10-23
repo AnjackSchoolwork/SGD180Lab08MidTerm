@@ -39,7 +39,7 @@ class baseEnt {
 		}
 
 		// Empty sprite by default
-		this.image = new Sprite(sprite_image)
+		this.sprite = new Sprite(sprite_image)
 	}
 
 	get Health() {
@@ -136,6 +136,8 @@ class Sprite {
 	constructor(sprite_image) {
 		if (sprite_image != null) {
 			// Create an image element and store it
+			this.img = document.createElement("img")
+			this.img.src = sprite_image
 		}
 		else {
 			// Use default placeholder sprite
@@ -145,4 +147,35 @@ class Sprite {
 	Update() {
 
 	}
+}
+
+class Scene {
+	constructor(reference_to_canvas) {
+		this.ctx = reference_to_canvas.getContext("2d")
+		this.actor_list = []
+	}
+
+	addActor(actor_to_add) {
+		// TODO: validate
+		this.actor_list.push(actor_to_add)
+	}
+
+	removeActor(actor_to_remove) {
+
+	}
+
+	get actorList() {
+
+	}
+
+	drawActor(actor_to_draw) {
+		this.ctx.drawImage(actor_to_draw.sprite.img, actor_to_draw.x, actor_to_draw.y)
+	}
+
+	Update() {
+		for (var index in this.actor_list) {
+			this.drawActor(this.actor_list[index])
+		}
+	}
+
 }
