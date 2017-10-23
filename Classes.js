@@ -1,3 +1,4 @@
+// All items inherit from this
 class baseItem {
 
 	constructor() {
@@ -13,15 +14,30 @@ class baseItem {
 	}
 }
 
+
+// All entities inherit from this
 class baseEnt {
 
 	constructor() {
+		// Percentage-based?
 		this.health = 100
+
+		// Inventory is object containing keys which are object names
+		// and values which are objects defining what the object does.
+		// Each inventory object will have a passiveEffect method and
+		// an activeEffect method. 
+		// passiveEffect methods are run every tick
+		// activeEffect methods are run on use (predefined use key 
+		// when item is selected/equipped)
 		this.inventory = {}
+
+		// Default to canvas origin
 		this.position = {
 			"x": 0,
 			"y": 0
 		}
+
+		// Empty sprite by default
 		this.image = new Sprite()
 	}
 
@@ -84,11 +100,13 @@ class baseEnt {
 		this.image = new_image
 	}
 
+	// Redraw sprites, update positions
 	Update() {
 
 	}
 }
 
+// Mob is a type of entity
 class baseMob extends baseEnt {
 
 	Update() {
@@ -100,6 +118,7 @@ class baseMob extends baseEnt {
 	}
 }
 
+// Player is a type of mob
 class Player extends baseEnt {
 
 	Update() {
@@ -113,4 +132,11 @@ class Player extends baseEnt {
 
 class Sprite {
 
+	constructor() {
+
+	}
+
+	Update() {
+
+	}
 }
