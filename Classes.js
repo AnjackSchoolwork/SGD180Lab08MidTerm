@@ -169,13 +169,28 @@ class Scene {
 	}
 
 	drawActor(actor_to_draw) {
-		this.ctx.drawImage(actor_to_draw.sprite.img, actor_to_draw.x, actor_to_draw.y)
+		this.ctx.drawImage(actor_to_draw.sprite.img, actor_to_draw.position.x, actor_to_draw.position.y)
 	}
 
 	Update() {
+		this.clearCanvas()
+		this.drawScene()
+	}
+
+	// Draw blankness
+	clearCanvas() {
+		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+	}
+
+	// Draw everything in current scene
+	drawScene() {
 		for (var index in this.actor_list) {
 			this.drawActor(this.actor_list[index])
 		}
 	}
 
+	// Returns a static image of the scene in its current state
+	getStaticScene() {
+
+	}
 }

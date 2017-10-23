@@ -1,3 +1,6 @@
+// Global game state
+game_state = 0
+
 // Initialization and game loop
 
 function Setup(canvas) {
@@ -8,10 +11,17 @@ function Setup(canvas) {
 	scene.addActor(thePlayer)
 
 	scene.Update()
-	//setInterval(function () { gameLoop() }, 30)
+	setInterval(function () { gameLoop() }, 30)
 }
 
 function gameLoop() {
-	scene.Update()
+	if (game_state == game_states.playing) {
+		scene.Update()
+	}
 }
 
+game_states = {
+	"menu": 0,
+	"playing": 1,
+	"paused": 2
+}
