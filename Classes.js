@@ -103,7 +103,13 @@ class baseEnt {
 
 	// Redraw sprites, update positions
 	Update() {
+
+		// TODO: Move this to Draw method
 		this.sprite_img.Update()
+	}
+
+	Draw(scene) {
+		scene.ctx.drawImage(this.Sprite.img, this.position.x, this.position.y)
 	}
 }
 
@@ -167,16 +173,24 @@ class baseMob extends baseEnt {
 		var temp_context = temp_canvas.getContext("2d")
 		temp_context.drawImage(this.Sprite.img, 0, 0)
 		
-		var sprite_image = temp_context.getImageData(0, 0, temp_canvas.width, temp_canvas.height)
+		var sprite_image = temp_context.getImageData(0, 0, temp_canvas.width, temp_canvas.height).data
+		
+		var overlap_image_raw = scene.map.getSpriteOverlap(this.position.x, this.position.y, this.Sprite.img.width, this.Sprite.img.height)
+		var overlap_image = overlap_image_raw.data
 
-		var overlap_image = scene.map.getSpriteOverlap(this.Sprite.img.x, this.Sprite.img.y, this.Sprite.img.width, this.Sprite.img.height)
-
+		var pixel_sum = 0
 		// Brute force
 		for (var index = 0; index < sprite_image.length; index += 4){
-			for (var offset = 0; offset < 3; offset++) {
-				if (sprite_image[index + offset] != 255 && overlap_image[index + offset] != 255) {
-					return true
-				}
+			
+			for (var offset = 0; offset < 4; offset++) {
+				pixel_sum += overlap_image[index + offset]
+			}
+			
+			if (pixel_sum > 0) {
+				return true
+			}
+			else {
+				pixel_sum = 0
 			}
 		}
 
@@ -209,6 +223,7 @@ class Player extends baseMob {
 	Update(reference_to_scene) {
 		super.Update(reference_to_scene)
 		this.Sprite.Update()
+
 	}
 
 	hookControls() {
@@ -286,7 +301,7 @@ class Scene {
 
 	// This should be a method of the baseEnt class
 	drawActor(actor_to_draw) {
-		this.ctx.drawImage(actor_to_draw.Sprite.img, actor_to_draw.position.x, actor_to_draw.position.y)
+		actor_to_draw.Draw(this)
 	}
 
 	Update() {
@@ -309,8 +324,10 @@ class Scene {
 	// Draw everything in current scene
 	drawScene() {
 		// ********DEBUG CODE********
+		this.map_ctx.clearRect(0, 0, this.map_ctx.canvas.width, this.map_ctx.canvas.height)
 		this.map_ctx.fillStyle = "black"
 		this.map_ctx.fillRect(500, 0, 30, 600)
+
 		// ********DEBUG CODE********
 
 		for (var index in this.actor_list) {
@@ -331,6 +348,6 @@ class Map {
 	}
 
 	getSpriteOverlap(x_pos, y_pos, width, height) {
-		return this.ctx.getImageData(x_pos, y_pos, x_pos + width, y_pos + height)
+		return this.ctx.getImageData(x_pos, y_pos, width, height)
 	}
 }
