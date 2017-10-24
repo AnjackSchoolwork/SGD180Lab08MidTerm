@@ -39,7 +39,7 @@ class baseEnt {
 		}
 
 		// Empty sprite by default
-		this.sprite = new Sprite(sprite_image)
+		this.sprite_img = new Sprite(sprite_image)
 	}
 
 	get Health() {
@@ -92,41 +92,130 @@ class baseEnt {
 		this.position = new_position
 	}
 
-	get Image() {
-		return this.image
+	get Sprite() {
+		return this.sprite_img
 	}
 
-	set Image(new_image) {
+	set Sprite(new_image) {
 		// TODO: Validation
-		this.image = new_image
+		this.sprite_img = new_image
 	}
 
 	// Redraw sprites, update positions
 	Update() {
-		this.image.Update()
+		this.sprite_img.Update()
 	}
 }
 
 // Mob is a type of entity
 class baseMob extends baseEnt {
 
+	constructor() {
+		super(arguments[0], arguments[1], arguments[2])
+
+		// Move speed
+		this.move_increment = 10
+
+		// Move?
+		this.move_vectors = {
+			"x_left": 0,
+			"x_right": 0,
+			"y_up": 0,
+			"y_down": 0,
+			"x": 0,
+			"y": 0
+		}
+
+	}
+
 	Update() {
 		super.Update()
+		this.Move()
 	}
 
 	Move() {
+		this.move_vectors.x = this.move_vectors.x_left + this.move_vectors.x_right
+		this.move_vectors.y = this.move_vectors.y_up + this.move_vectors.y_down
+		if (this.move_vectors.x != 0) {
+			this.moveX(this.move_vectors.x)
+			console.log(this.move_vectors)
+		}
+
+	}
+
+	// Return true if we've collided with something, false otherwise
+	Collided() {
+
+		// Handle colliding with map.
 
 	}
 }
 
 // Player is a type of mob
-class Player extends baseEnt {
+class Player extends baseMob {
+
+	constructor() {
+		super(arguments[0], arguments[1], arguments[2])
+		this.loadConfig()
+		this.hookControls()
+	}
+
+	loadConfig() {
+		// TODO: Make better
+		// Temporary hardcode
+
+		// Control keyCodes
+		this.keys = {
+			"left": 65,
+			"right": 68,
+			"jump": 32
+		}
+
+	}
 
 	Update() {
 		super.Update()
+		this.Sprite.Update()
 	}
 
-	Control() {
+	hookControls() {
+		var calling_obj = this
+		document.addEventListener("keydown", function (e) {
+			calling_obj.inputHandler(e, "down")
+		})
+		document.addEventListener("keyup", function (e) {
+			calling_obj.inputHandler(e, "up")
+		})
+	}
+
+	inputHandler(e, direction) {
+		//TODO: Need to check for multiple simultaneous keypresses.
+		switch (direction) {
+			case ("down"):
+				if (e.keyCode == this.keys.left) {
+					this.move_vectors.x_left = -this.move_increment
+				}
+				else if (e.keyCode == this.keys.right) {
+					this.move_vectors.x_right = this.move_increment
+				}
+				break
+			case ("up"):
+				if (e.keyCode == this.keys.left) {
+					this.move_vectors.x_left = 0
+				}
+				else if(e.keyCode == this.keys.right) {
+					this.move_vectors.x_right = 0
+				}
+				break
+		}
+	}
+
+	moveX(dist_to_move) {
+
+		this.position.x += dist_to_move
+	}
+
+	moveY() {
 
 	}
 }
@@ -169,17 +258,24 @@ class Scene {
 	}
 
 	drawActor(actor_to_draw) {
-		this.ctx.drawImage(actor_to_draw.sprite.img, actor_to_draw.position.x, actor_to_draw.position.y)
+		this.ctx.drawImage(actor_to_draw.Sprite.img, actor_to_draw.position.x, actor_to_draw.position.y)
 	}
 
 	Update() {
 		this.clearCanvas()
+		this.updateScene()
 		this.drawScene()
 	}
 
 	// Draw blankness
 	clearCanvas() {
 		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+	}
+
+	updateScene() {
+		for (var index in this.actor_list) {
+			this.actor_list[index].Update()
+		}
 	}
 
 	// Draw everything in current scene
@@ -192,5 +288,16 @@ class Scene {
 	// Returns a static image of the scene in its current state
 	getStaticScene() {
 
+	}
+}
+
+class Map {
+
+	constructor(reference_to_canvas) {
+		this.ctx = reference_to_canvas.getContext("2d")
+	}
+
+	getSpriteOverlap(x_pos, y_pos, width, height) {
+		return this.ctx.getImageData(x_pos, y_pos, x_pos + width, y_pos + height)
 	}
 }

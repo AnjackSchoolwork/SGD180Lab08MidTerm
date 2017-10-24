@@ -4,17 +4,17 @@ game_state = 0
 // Initialization and game loop
 
 function Setup(canvas) {
-	scene = new Scene(canvas)
+	var scene = new Scene(canvas)
 
-	thePlayer = new Player(400, 300, "img/jonesy.png")
+	var thePlayer = new Player(400, 300, "img/jonesy.png")
 
 	scene.addActor(thePlayer)
 
 	scene.Update()
-	setInterval(function () { gameLoop() }, 30)
+	setInterval(function () { gameLoop(scene) }, 30)
 }
 
-function gameLoop() {
+function gameLoop(scene) {
 	if (game_state == game_states.playing) {
 		scene.Update()
 	}
