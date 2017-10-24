@@ -128,26 +128,59 @@ class baseMob extends baseEnt {
 
 	}
 
-	Update() {
-		super.Update()
-		this.Move()
+	Update(reference_to_scene) {
+		super.Update(reference_to_scene)
+
+		// Update vector sums
+		this.move_vectors.x = this.move_vectors.x_left + this.move_vectors.x_right
+		this.move_vectors.y = this.move_vectors.y_up + this.move_vectors.y_down
+
+		if (!this.Collided(reference_to_scene)) {
+			this.Move()
+		}
 	}
 
 	Move() {
-		this.move_vectors.x = this.move_vectors.x_left + this.move_vectors.x_right
-		this.move_vectors.y = this.move_vectors.y_up + this.move_vectors.y_down
 		if (this.move_vectors.x != 0) {
 			this.moveX(this.move_vectors.x)
-			console.log(this.move_vectors)
 		}
 
 	}
 
+	moveX(dist_to_move) {
+
+		this.position.x += dist_to_move
+	}
+
+	moveY() {
+
+	}
+
 	// Return true if we've collided with something, false otherwise
-	Collided() {
+	Collided(scene) {
+		// TODO: Better
 
 		// Handle colliding with map.
+		var temp_canvas = document.createElement("canvas")
+		temp_canvas.height = this.Sprite.img.height
+		temp_canvas.width = this.Sprite.img.width
+		var temp_context = temp_canvas.getContext("2d")
+		temp_context.drawImage(this.Sprite.img, 0, 0)
+		
+		var sprite_image = temp_context.getImageData(0, 0, temp_canvas.width, temp_canvas.height)
 
+		var overlap_image = scene.map.getSpriteOverlap(this.Sprite.img.x, this.Sprite.img.y, this.Sprite.img.width, this.Sprite.img.height)
+
+		// Brute force
+		for (var index = 0; index < sprite_image.length; index += 4){
+			for (var offset = 0; offset < 3; offset++) {
+				if (sprite_image[index + offset] != 255 && overlap_image[index + offset] != 255) {
+					return true
+				}
+			}
+		}
+
+		return false
 	}
 }
 
@@ -173,8 +206,8 @@ class Player extends baseMob {
 
 	}
 
-	Update() {
-		super.Update()
+	Update(reference_to_scene) {
+		super.Update(reference_to_scene)
 		this.Sprite.Update()
 	}
 
@@ -209,15 +242,6 @@ class Player extends baseMob {
 				break
 		}
 	}
-
-	moveX(dist_to_move) {
-
-		this.position.x += dist_to_move
-	}
-
-	moveY() {
-
-	}
 }
 
 class Sprite {
@@ -239,8 +263,11 @@ class Sprite {
 }
 
 class Scene {
-	constructor(reference_to_canvas) {
-		this.ctx = reference_to_canvas.getContext("2d")
+	constructor(scene_canvas, map_canvas) {
+		this.ctx = scene_canvas.getContext("2d")
+		this.map = new Map(map_canvas)
+		this.map_ctx = map_canvas.getContext("2d")
+
 		this.actor_list = []
 	}
 
@@ -257,6 +284,7 @@ class Scene {
 
 	}
 
+	// This should be a method of the baseEnt class
 	drawActor(actor_to_draw) {
 		this.ctx.drawImage(actor_to_draw.Sprite.img, actor_to_draw.position.x, actor_to_draw.position.y)
 	}
@@ -274,12 +302,17 @@ class Scene {
 
 	updateScene() {
 		for (var index in this.actor_list) {
-			this.actor_list[index].Update()
+			this.actor_list[index].Update(this)
 		}
 	}
 
 	// Draw everything in current scene
 	drawScene() {
+		// ********DEBUG CODE********
+		this.map_ctx.fillStyle = "black"
+		this.map_ctx.fillRect(500, 0, 30, 600)
+		// ********DEBUG CODE********
+
 		for (var index in this.actor_list) {
 			this.drawActor(this.actor_list[index])
 		}
